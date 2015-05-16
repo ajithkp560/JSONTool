@@ -1,4 +1,4 @@
-import android.util.Log;
+import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -7,13 +7,15 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.http.util.EntityUtils;
 
 import java.io.*;
+
+import java.net.HttpCookie;
 import java.util.List;
 
 /**
@@ -25,7 +27,12 @@ public class JSONTool {
     static JSONObject jobj = null;
     static JSONArray  jarr = null;
     List<NameValuePair> params = null;
-    String url, response ,method="get";
+    String url;
+    List<Cookie> cookies;
+    String strCookie;
+    String response;
+    String method="get";
+    boolean flg = false;
     JSONTool(String u)
     {
         url = u;
@@ -60,6 +67,14 @@ public class JSONTool {
             if(params==null)
             {
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie",strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
+
                 httpResponse = httpClient.execute(httpGet);
             }
             else if(params!=null && method.equals("get"))
@@ -67,15 +82,35 @@ public class JSONTool {
                 String paramString = URLEncodedUtils.format(params, "utf-8");
                 url+="?"+paramString;
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
+
                 httpResponse = httpClient.execute(httpGet);
             }
             else
             {
                 HttpPost httpPost = new HttpPost(url);
+                if(flg)
+                {
+                    httpPost.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
+
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
             }
             httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
+
+            if(!flg) {
+                cookies = httpClient.getCookieStore().getCookies();
+            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
             StringBuilder sb = new StringBuilder();
@@ -112,6 +147,13 @@ public class JSONTool {
             if(params==null)
             {
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpResponse = httpClient.execute(httpGet);
             }
             else if(params!=null && method.equals("get"))
@@ -119,16 +161,34 @@ public class JSONTool {
                 String paramString = URLEncodedUtils.format(params, "utf-8");
                 url+="?"+paramString;
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpResponse = httpClient.execute(httpGet);
             }
             else
             {
                 HttpPost httpPost = new HttpPost(url);
+                if(flg)
+                {
+                    httpPost.setHeader("Cookie", strCookie+";");
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
                 httpResponse = httpClient.execute(httpPost);
             }
             httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
+
+            if(!flg) {
+                cookies = httpClient.getCookieStore().getCookies();
+            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
             StringBuilder sb = new StringBuilder();
@@ -162,11 +222,25 @@ public class JSONTool {
             if(params==null)
             {
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpResponse = httpClient.execute(httpGet);
             }
             else
             {
                 HttpPost httpPost = new HttpPost(url);
+                if(flg)
+                {
+                    httpPost.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
                 httpResponse = httpClient.execute(httpPost);
             }
@@ -209,21 +283,46 @@ public class JSONTool {
             if(params==null)
             {
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpResponse = httpClient.execute(httpGet);
+                httpEntity = httpResponse.getEntity();
             }
             else if(params!=null && method.equals("get"))
             {
                 String paramString = URLEncodedUtils.format(params, "utf-8");
                 url+="?"+paramString;
                 HttpGet httpGet = new HttpGet(url);
+                if(flg)
+                {
+                    httpGet.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpResponse = httpClient.execute(httpGet);
+                httpEntity = httpResponse.getEntity();
             }
             else
             {
                 HttpPost httpPost = new HttpPost(url);
+                if(flg)
+                {
+                    httpPost.setHeader("Cookie", strCookie);
+                }
+                else {
+                    cookies = httpClient.getCookieStore().getCookies();
+                }
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
+                httpResponse = httpClient.execute(httpPost);
+                httpEntity = httpResponse.getEntity();
             }
-            httpEntity = httpResponse.getEntity();
+
             is = httpEntity.getContent();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
@@ -244,5 +343,16 @@ public class JSONTool {
             e.printStackTrace();
         }
         return response;
+    }
+
+    public List<Cookie> getCookies()
+    {
+        return cookies;
+    }
+
+    public void setCookies(String c)
+    {
+        strCookie = c;
+        flg = true;
     }
 }
